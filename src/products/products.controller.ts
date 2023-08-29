@@ -6,17 +6,21 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { QueryProductDto } from './dto/query-product.dto';
 
 @ApiTags('Products')
 @ApiBearerAuth()
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) { }
 
   /*
    * TODO: Add ability to filter by name to this controller action.
@@ -26,16 +30,19 @@ export class ProductsController {
    */
 
   @Get()
-  index() {
-    return this.productsService.findAll();
+  @UseGuards(AuthGuard('jwt'))
+  index(@Query() query: QueryProductDto) {
+    return this.productsService.findAll(query);
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard('jwt'))
   show(@Param('id') id: number) {
     return this.productsService.findOne(+id);
   }
@@ -46,6 +53,7 @@ export class ProductsController {
    */
 
   @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
   async update(
     @Param('id') id: number,
     @Body() updateProductDto: UpdateProductDto,
@@ -56,6 +64,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
   async remove(@Param('id') id: number) {
     const product = await this.productsService.findOne(id);
 

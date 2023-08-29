@@ -6,6 +6,8 @@ import {
 import { Reflector } from '@nestjs/core';
 import { EntityNotFoundErrorFilter } from './utils/filters/entity-not-found.filter';
 import { EntityInvalidFilter } from './utils/filters/entity-invalid.filter';
+import * as cookieParser from 'cookie-parser';
+
 
 export function mainConfig(app: INestApplication) {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
@@ -14,4 +16,6 @@ export function mainConfig(app: INestApplication) {
     new EntityNotFoundErrorFilter(),
     new EntityInvalidFilter(),
   );
+  app.use(cookieParser());
+
 }
